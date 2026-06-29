@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BJJ Flow</title>
+    
+    <!-- ==========================================
+         ESTILOS CSS (Visual da Página)
+         ========================================== -->
+    <style>
+        /* Estilos globais e reset básico */
+        body {    
+            background-color: #1a1a1a; /* Fundo dark */   
+            color: #f4f4f4; /* Texto claro */   
+            font-family: sans-serif; 
+            margin: 0;
+            padding: 0;
+        } 
+        
+        /* Cabeçalho principal com a marca */
+        header {    
+            background: #000;    
+            padding: 20px;    
+            text-align: center;    
+            border-bottom: 3px solid #d4af37; /* Linha dourada padrão */
+        } 
+
+        /* Barra de navegação do menu */
+        nav {
+            text-align: center;
+            background: #111;
+            padding: 10px;
+        }
+
+        /* Links do menu */
+        nav a {
+            color: #d4af37;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: #fff; /* Fica branco ao passar o mouse */
+        }
+        
+        /* Caixa (card) para telas menores como Login e Treino */
+        .card {    
+            background: #262626;    
+            padding: 30px;    
+            margin: 40px auto;    
+            max-width: 500px;    
+            border-radius: 8px;    
+            text-align: center; 
+            border: 1px solid #333;
+        } 
+
+        /* Organização em grade para a loja e planos */
+        .grid-vendas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsivo automático */
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Bloco de cada produto/plano à venda */
+        .item-venda {
+            background: #262626;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ajuste das imagens dos kimonos */
+        .item-venda img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover; /* Recorta a imagem sem distorcer */
+            border-radius: 4px;
+            background: #111;
+            margin-bottom: 10px;
+        }
+
+        /* Estilo do preço em destaque */
+        .preco {
+            color: #2ecc71; /* Verde para destacar valor */
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        /* Botões padrões do sistema */
+        button {    
+            background: #d4af37;    
+            color: #000;    
+            border: none;    
+            padding: 10px 20px;    
+            font-weight: bold;    
+            cursor: pointer;    
+            border-radius: 5px; 
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #fff;
+        }
+
+        /* Campos de texto e inputs */
+        input[type="text"], input[type="password"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background: #333;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        /* Classe utilitária para esconder elementos/telas */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho fixo do App -->
+    <header>
+        <h1>OSS! <span>BJJ FLOW</span></h1>  
+    </header>
+
+    <!-- Menu de Navegação (Começa escondido e aparece após o login) -->
+    <nav id="menu-principal" class="hidden">
+        <a onclick="mudarTela('treino')">Registrar Treino</a>
+        <a onclick="mudarTela('planos')">Planos de Aula</a>
+        <a onclick="mudarTela('kimonos')">Loja de Kimonos</a>
+        <a onclick="deslogar()">Sair</a>
+    </nav>
+
+    <!-- ==========================================
+         CONTEÚDO PRINCIPAL (Telas do App)
+         ========================================== -->
+    <main>
+        
+        <!-- TELA DE LOGIN (Visível por padrão no início) -->
+        <section id="tela-login" class="card">
+            <h2>Área do Atleta</h2>
+            <input type="text" id="usuario" placeholder="Usuário ou E-mail">
+            <input type="password" id="senha" placeholder="Senha">
+            <button onclick="fazerLogin()">Entrar</button>
+            <div id="erro-login" style="color: #e74c3c; margin-top: 10px;"></div>
+        </section>
+
+        <!-- TELA DE TREINO -->
+        <section id="tela-treino" class="card hidden">       
+            <h2>Registrar Treino</h2>
+            <input type="file" id="foto-treino" accept="image/*">       
+            <button onclick="processarTreino()">Enviar Foto</button>     
+            <div id="status-treino" style="margin-top: 15px;"></div>
+        </section>   
+
+        <!-- TELA DE PLANOS DE AULA -->
+        <section id="tela-planos" class="hidden">
+            <h2 style="text-align: center; color: #d4af37;">Planos de Aula</h2>
+            <div class="grid-vendas">
+                <div class="item-venda">
+                    <h3>Plano Mensal</h3>
+                    <p>Acesso livre a todas as aulas de segunda a sábado.</p>
+                    <div class="preco">R$ 150,00 /mês</div>
+                    <button onclick="comprar('Plano Mensal')">Assinar Agora</button>
+                </div>
+                <div class="item-venda">
+                    <h3>Plano Semestral</h3>
+                    <p>Foco total na evolução com desconto no pacote.</p>
+                    <div class="preco">R$ 130,00 /mês</div>
+                    <button onclick="comprar('Plano Semestral')">Assinar Agora</button>
+                </div>
+                <div class="item-venda">
+                    <h3>Plano Black Belt Privado</h3>
+                    <p>Aulas particulares individuais agendadas.</p>
+                    <div class="preco">R$ 400,00 /mês</div>
+                    <button onclick="comprar('Plano Black Belt Privado')">Assinar Agora</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA DE KIMONOS -->
+        <section id="tela-kimonos" class="hidden">
+            <h2 style="text-align: center; color: #d4af37;">Loja de Kimonos</h2>
+            <div class="grid-vendas">
+                
+                <!-- Kimono 1: Branco -->
+                <div class="item-venda">
+                    <img src="https://images.tcdn.com.br/img/img_prod/1341282/kimono_jiu_jitsu_branco_pro_2_0_checkmat_koral_719_1_c80427515b381309c435aecef523267d.jpg" alt="Kimono Branco">
+                    <h3>Kimono BJJ Classic - Branco</h3>
+                    <p>Trançado leve, ideal para treinos diários e competições.</p>
+                    <div class="preco">R$ 380,00</div>
+                    <button onclick="comprar('Kimono Branco')">Comprar</button>
+                </div>
+                
+                <!-- Kimono 2: Preto -->
+                <div class="item-venda">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyBUmk2xDdGglLq6qBqqTrTHv2fwzHFy4_pQ&s" alt="Kimono Preto">
+                    <h3>Kimono Armadura - Preto</h3>
+                    <p>Alta resistência com costuras reforçadas em dourado.</p>
+                    <div class="preco">R$ 420,00</div>
+                    <button onclick="comprar('Kimono Preto')">Comprar</button>
+                </div>
+                
+            </div>
+        </section>
+    </main>   
+    
+    <!-- ==========================================
+         LÓGICA JAVASCRIPT (Funcionamento das Telas)
+         ========================================== -->
+    <script> 
+    
+    /**
+     * Alterna a visibilidade das telas principais.
+     * Adiciona a classe 'hidden' em todas e remove apenas na selecionada.
+     */
+    function mudarTela(tela) {
+        document.getElementById('tela-treino').classList.add('hidden');
+        document.getElementById('tela-planos').classList.add('hidden');
+        document.getElementById('tela-kimonos').classList.add('hidden');
+        
+        if(tela === 'treino') document.getElementById('tela-treino').classList.remove('hidden');
+        if(tela === 'planos') document.getElementById('tela-planos').classList.remove('hidden');
+        if(tela === 'kimonos') document.getElementById('tela-kimonos').classList.remove('hidden');
+    }
+
+    /**
+     * Valida os campos e simula o login do usuário.
+     * Libera o menu de navegação e joga o atleta na tela de treinos.
+     */
+    function fazerLogin() {
+        const user = document.getElementById('usuario').value;
+        const pass = document.getElementById('senha').value;
+        const erro = document.getElementById('erro-login');
+
+        // Validação básica de campos vazios
+        if (user === "" || pass === "") {
+            erro.innerHTML = "Preencha todos os campos!";
+            return;
+        }
+
+        // Esconde o login e mostra o app logado
+        document.getElementById('tela-login').classList.add('hidden');
+        document.getElementById('menu-principal').classList.remove('hidden');
+        document.getElementById('tela-treino').classList.remove('hidden');
+        erro.innerHTML = ""; // Limpa mensagens de erro antigas
+    }
+
+    /**
+     * Desloga o usuário do sistema, esconde o menu principal
+     * e limpa os campos de texto do formulário.
+     */
+    function deslogar() {
+        document.getElementById('menu-principal').classList.add('hidden');
+        document.getElementById('tela-treino').classList.add('hidden');
+        document.getElementById('tela-planos').classList.add('hidden');
+        document.getElementById('tela-kimonos').classList.add('hidden');
+        document.getElementById('tela-login').classList.remove('hidden');
+        
+        // Limpa os dados escritos nas caixas de texto
+        document.getElementById('usuario').value = "";
+        document.getElementById('senha').value = "";
+    }
+
+    /**
+     * Simula o upload de imagem de treino e adiciona
+     * horas de treino no perfil após 2 segundos de delay.
+     */
+    function processarTreino() {
+        const input = document.getElementById('foto-treino'); 
+        const status = document.getElementById('status-treino');
+
+        // Verifica se há arquivos selecionados
+        if (input.files.length === 0) {
+            status.innerHTML = "<span style='color: #e74c3c;'>Selecione uma foto!</span>";
+            return;
+        }
+
+        status.innerHTML = "Analisando foto...";
+
+        // Simula o tempo de resposta do servidor (2000 milissegundos)
+        setTimeout(() => {
+            status.innerHTML = `
+                <div style="color: #2ecc71;">     
+                    <strong>Treino Confirmado!</strong><br>     
+                    +1.5 horas adicionadas ao seu perfil.     
+                </div>
+            `;
+        }, 2000);
+    }
+
+    /**
+     * Dispara um aviso na tela simulando o redirecionamento
+     * para uma página de pagamentos externa.
+     */
+    function comprar(item) {
+        alert(`Você selecionou: ${item}\nRedirecionando para o checkout de pagamento...`);
+    }
+    </script>
+</body>
+</html>
+
+                </div>
+            </div>
+        </section>
+    </main>   
+    
+    <script> 
+    // Sistema Simples de Navegação entre telas
+    function mudarTela(tela) {
+        document.getElementById('tela-treino').classList.add('hidden');
+        document.getElementById('tela-planos').classList.add('hidden');
+        document.getElementById('tela-kimonos').classList.add('hidden');
+        
+        if(tela === 'treino') document.getElementById('tela-treino').classList.remove('hidden');
+        if(tela === 'planos') document.getElementById('tela-planos').classList.remove('hidden');
+        if(tela === 'kimonos') document.getElementById('tela-kimonos').classList.remove('hidden');
+    }
+
+    // Controle de Login básico
+    function fazerLogin() {
+        const user = document.getElementById('usuario').value;
+        const pass = document.getElementById('senha').value;
+        const erro = document.getElementById('erro-login');
+
+        if (user === "" || pass === "") {
+            erro.innerHTML = "Preencha todos os campos!";
+            return;
+        }
+
+        // Simulação de login aceitando qualquer dado inserido
+        document.getElementById('tela-login').classList.add('hidden');
+        document.getElementById('menu-principal').classList.remove('hidden');
+        document.getElementById('tela-treino').classList.remove('hidden');
+        erro.innerHTML = "";
+    }
+
+    function deslogar() {
+        document.getElementById('menu-principal').classList.add('hidden');
+        document.getElementById('tela-treino').classList.add('hidden');
+        document.getElementById('tela-planos').classList.add('hidden');
+        document.getElementById('tela-kimonos').classList.add('hidden');
+        document.getElementById('tela-login').classList.remove('hidden');
+        
+        // Limpa campos
+        document.getElementById('usuario').value = "";
+        document.getElementById('senha').value = "";
+    }
+
+    // Função de envio do treino original
+    function processarTreino() {
+        const input = document.getElementById('foto-treino'); 
+        const status = document.getElementById('status-treino');
+
+        if (input.files.length === 0) {
+            status.innerHTML = "<span style='color: #e74c3c;'>Selecione uma foto!</span>";
+            return;
+        }
+
+        status.innerHTML = "Analisando foto...";
+
+        setTimeout(() => {
+            status.innerHTML = `
+                <div style="color: #2ecc71;">     
+                    <strong>Treino Confirmado!</strong><br>     
+                    +1.5 horas adicionadas ao seu perfil.     
+                </div>
+            `;
+        }, 2000);
+    }
+
+    // Alerta básico de compra
+    function comprar(item) {
+        alert(`Você selecionou: ${item}\nRedirecionando para o checkout de pagamento...`);
+    }
+    </script>
+</body>
+</html>
